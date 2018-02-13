@@ -69,9 +69,9 @@ def kfold_data(X_input, c_input, k, nb_class):
             if j != i:
                 xx += k_plis[j][0]
                 yy += k_plis[j][1]
-        plis[0].append(np.array(xx).T)
+        plis[0].append(np.array(xx))
         plis[1].append(np.array(yy))
-        plis[2].append(np.array(k_plis[i][0]).T)
+        plis[2].append(np.array(k_plis[i][0]))
         plis[3].append(np.array(k_plis[i][1]))
         
     return plis[0], plis[1], plis[2], plis[3]

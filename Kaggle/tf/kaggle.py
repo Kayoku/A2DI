@@ -12,7 +12,7 @@ import os
 
 os.environ['TF_CPP_MIN_LOG_LEVEL']="3"
 
-from .dataset import *
+from dataset import *
 
 """
 Variable utiles
@@ -20,7 +20,7 @@ Variable utiles
 nb_features   = 4004
 learning_rate = 0.3
 nb_batch      = 100
-epochs        = 1000
+epochs        = 2000
 
 """
 Fonctions utiles
@@ -84,13 +84,10 @@ with tf.Session() as sess:
     m = m/len(data)
     print("Accuracy: {}".format(m))
 
-    """
-    Test
-    """
+    # Test
     test_file = open("test.csv", 'w')
-    test_file.write("# Id,#Class")
-    for i in range(len(data_test)):
-        o = output.eval({x: [data[i]], y: [labels[i]]})
+    test_file.write("# Id,#Class\n")
+    for i in range(len(data_final)):
+        o = output.eval({x: [data_final[i]]})
         test_file.write("{},{}\n".format(i,int(np.around(o))))
     test_file.close()
-    
