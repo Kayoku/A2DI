@@ -8,32 +8,17 @@ Created on Wed Jan 31 09:48:18 2018
 import h5py
 import numpy as np
 import tensorflow as tf
+import os
 
-"""
-Lecture du fichier de données
-"""
-f = h5py.File("/home/m2mocad/bouchoucha/project/A2DI/Kaggle/kaggle_lille1_2018_train_v1.save", 'r')
+os.environ['TF_CPP_MIN_LOG_LEVEL']="3"
 
-data = np.array(f["dataset_1"])
-labels = np.array(f["labels"])
-
-s = np.random.get_state()
-np.random.shuffle(data)
-np.random.set_state(s)
-np.random.shuffle(labels)
-
-"""
-Lecture du fichier de test
-"""
-f = h5py.File("/home/m2mocad/bouchoucha/project/A2DI/Kaggle/kaggle_lille1_2018_test_v1.save", 'r')
-data_test = np.array(f["dataset_1"])
-
+from .dataset import *
 
 """
 Variable utiles
 """
 nb_features   = 4004
-learning_rate = 0.2
+learning_rate = 0.3
 nb_batch      = 100
 epochs        = 1000
 
