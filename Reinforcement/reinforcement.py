@@ -53,23 +53,31 @@ for tr in transition:
         print("({},{},{}) = {}".format(tr, m, tr+1, t(tr, m, tr+1)))
 """       
 
-def value_iteration(N, A, T, R, dec):
+def value_iteration(N, A, T, R, dec, it):
     v = [0 for _ in range(N)]
     vp = [0 for _ in range(N)]
 
-    # On boucle 10 fois    
-    for i in range(5):
+    # Apprentissage
+    for i in range(it):
         for s in range(N):
-            su = []
-            for a in range(A):
-                su.append(0)
-                for ss in range(N):
-                    su[a] += T(s, a, ss) * (R(s, a, ss) + dec * v[ss])
-                    print(su)
-            vp[s] = np.argmax(su)
-        print("----")
+            su = [np.sum([T(s, a, ss) * (R(s, a, ss) + dec * v[ss]) for ss in range(N)]) for a in range(A)]
+            vp[s] = np.max(su)
         v = vp.copy()
 
-    return v # retourner fonction qui a un état, renvoie une action
+    # On extrait la politique
+    pi = []
+    for s in range(N):
+        su = [np.sum([T(s, a, ss) * (R(s, a, ss) + dec * v[ss]) for ss in range(N)]) for a in range(A)]
+        pi.append(np.argmax(su))
 
-policy = value_iteration(nb_state, 2, T_param(nb_state), R_param(nb_state), 0.9)
+    def policy(i):
+        return pi[i]
+
+    return policy #retourner fonction qui a un état, renvoie une action
+
+
+for sig in [0.1, 0.5, 0.9]:
+    for it in [100, 1000, 10000]:
+        policy = value_iteration(nb_state, 2, T_param(nb_state), R_param(nb_state), sig, it)
+        print("sig: {} et it: {}".format(sig, it))
+        print([policy(i) for i in range(nb_state)])
