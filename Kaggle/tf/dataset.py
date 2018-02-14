@@ -6,7 +6,7 @@ train  = h5py.File("/home/m2mocad/bouchoucha/Téléchargements/kaggle_lille1_201
 data   = np.array(train["dataset_1"])
 labels = np.array(train["labels"]).astype(int)
 
-st     = np.random.get_state()
+st = np.random.get_state()
 np.random.shuffle(data)
 np.random.set_state(st)
 np.random.shuffle(labels)

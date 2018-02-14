@@ -20,7 +20,7 @@ Variable utiles
 nb_features   = 4004
 learning_rate = 0.3
 nb_batch      = 100
-epochs        = 2000
+epochs        = 300
 
 """
 Fonctions utiles
@@ -61,33 +61,39 @@ Train
 """
 with tf.Session() as sess:
     sess.run(init)
-    
-    for ep in range(epochs):
-        cost_mean = 0
-        X_batches = np.array_split(data, nb_batch)
-        Y_batches = np.array_split(labels, nb_batch)
-        
-        for b in range(nb_batch):
-            batch_x, batch_y = X_batches[b], Y_batches[b]
-            _, c = sess.run([optimizer, cost], feed_dict={x: batch_x, y: batch_y})
+
+    for it in range(5):
+        dt_train  = plis[0][it]
+        lbl_train = plis[1][it]
+        dt_test   = plis[2][it]
+        lbl_test  = plis[3][it]
+
+        for ep in range(epochs):
+            cost_mean = 0
+            X_batches = np.array_split(dt_train, nb_batch)
+            Y_batches = np.array_split(lbl_train, nb_batch)
             
-            cost_mean += c/len(X_batches[b])
+            for b in range(nb_batch):
+                batch_x, batch_y = X_batches[b], Y_batches[b]
+                _, c = sess.run([optimizer, cost], feed_dict={x: batch_x, y: batch_y})
+                
+                cost_mean += c/len(X_batches[b])
+            
+            if (ep%10==0):
+                print("Epochs: {} cost: {}".format(ep+1, cost_mean))
         
-        if (ep%10==0):
-            print("Epochs: {} cost: {}".format(ep+1, cost_mean))
-    
-    m = 0
-    for i in range(len(data)):
-        o = output.eval({x: [data[i]], y: [labels[i]]})
-        if o > 0.5 and labels[i] == 1. or o < 0.5 and labels[i] == 0.:
-            m +=1
-    m = m/len(data)
-    print("Accuracy: {}".format(m))
+        m = 0
+        for i in range(len(dt_test)):
+            o = output.eval({x: [dt_test[i]], y: [lbl_test[i]]})
+            if o > 0.5 and lbl_test[i] == 1. or o < 0.5 and lbl_test[i] == 0.:
+                m +=1
+        m = m/len(dt_test)
+        print("Accuracy: {}".format(m))
 
     # Test
-    test_file = open("test.csv", 'w')
-    test_file.write("# Id,#Class\n")
-    for i in range(len(data_final)):
-        o = output.eval({x: [data_final[i]]})
-        test_file.write("{},{}\n".format(i,int(np.around(o))))
-    test_file.close()
+    #test_file = open("test.csv", 'w')
+    #test_file.write("# Id,#Class\n")
+    #for i in range(len(data_final)):
+    #    o = output.eval({x: [data_final[i]]})
+    #    test_file.write("{},{}\n".format(i,int(np.around(o))))
+    #test_file.close()

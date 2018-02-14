@@ -10,12 +10,12 @@ import numpy as np
 # Configurations
 #############################
 
-world_size    = 15 
+world_size    = 20
 nb_walls      = 20
 
 gamma         = 0.9
-learning_rate = 0.1
-epsilon_rand  = 0.2
+learning_rate = 0.01
+epsilon_rand  = 0.4
 
 current_x     = 1
 current_y     = 1
@@ -43,14 +43,14 @@ for i in [0, world_size]:
             walls.append((j, i))
             walls.append((i, j))
 
-worlds = [[' ' for _ in range(world_size+1)] for _ in range(world_size+1)]
+worlds = [['O' for _ in range(world_size+1)] for _ in range(world_size+1)]
 for w in walls:
     worlds[w[0]][w[1]] = '#'
 
 def display():
     for i in range(world_size+1):
        for j in range(world_size+1):
-           print(worlds[i][j], end='')
+           print(worlds[i][j], end=' ')
        print()
 
 #############################
@@ -147,6 +147,12 @@ for i in range(20000):
     print(i)
 
 #############################
+# Fitted-Q
+#############################
+
+
+
+#############################
 # Play
 #############################
 
@@ -155,7 +161,7 @@ def put_position(x, y):
     for i in range(world_size):
         for j in range(world_size):
             if worlds[i][j] == 'I':
-                worlds[i][j] = ' '
+                worlds[i][j] = 'O'
     worlds[x][y] = 'I'
 
 #Position de base
