@@ -1,8 +1,9 @@
 import h5py
 import numpy as np
+from global_vars import *
 
 # Lecture du fichier de données
-train  = h5py.File("/home/m2mocad/bouchoucha/Téléchargements/kaggle_lille1_2018_train_v1.save", 'r')
+train  = h5py.File("../kaggle_lille1_2018_train_v1.save", 'r')
 data   = np.array(train["dataset_1"])
 labels = np.array(train["labels"]).astype(int)
 
@@ -12,7 +13,7 @@ np.random.set_state(st)
 np.random.shuffle(labels)
 
 # Lecture du fichier de test
-final_test = h5py.File("/home/m2mocad/bouchoucha/Téléchargements/kaggle_lille1_2018_test_v1.save", 'r')
+final_test = h5py.File("../kaggle_lille1_2018_test_v1.save", 'r')
 data_final = np.array(final_test["dataset_1"])
 
 # X_input : ensemble X d'exemple
@@ -76,4 +77,4 @@ def kfold_data(X_input, c_input, k, nb_class):
         
     return plis[0], plis[1], plis[2], plis[3]
 
-plis = kfold_data(data, labels, 5, 2)
+plis = kfold_data(data, labels, K_FOLD, 2)

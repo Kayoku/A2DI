@@ -13,87 +13,46 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']="3"
 
 from dataset import *
+from help_func import *
+from global_vars import *
+from perceptron import *
 
-"""
-Variable utiles
-"""
-nb_features   = 4004
-learning_rate = 0.3
-nb_batch      = 100
-epochs        = 300
+for it in range(K_FOLD):
+  dt_train  = plis[0][it]
+  lbl_train = plis[1][it]
+  dt_test   = plis[2][it]
+  lbl_test  = plis[3][it]
 
-"""
-Fonctions utiles
-"""
-def weight_variable(shape):
-    initial = tf.truncated_normal(shape, stddev=0.1)
-    return tf.Variable(initial)
-    
-def bias_variable(shape):
-    initial = tf.constant(0.1, shape=shape)
-    return tf.Variable(initial)
+  with tf.Session() as sess:
+    sess.run(tf.global_variables_initializer())
 
-weights = {
-    'x' : weight_variable([nb_features, 1]),
-}
+    #######################################################
+    # Learning
+    #######################################################
 
-biases = {
-    'b' : bias_variable([1]),
-}
+    for ep in range(EPOCHS):
+      loss_mean = 0
+      X_batches = np.array_split(dt_train, NB_BATCH)
+      Y_batches = np.array_split(lbl_train, NB_BATCH)
+      
+      for b in range(NB_BATCH):
+        batch_x, batch_y = X_batches[b], Y_batches[b]
+        _, c = sess.run([optimizer, loss], feed_dict={x: batch_x, y: batch_y})
 
-"""
-Réseau
-"""
+        loss_mean += c/len(X_batches[b])
 
-x = tf.placeholder(tf.float32, [None, nb_features], "input-data")
-y = tf.placeholder(tf.float32, [None], "input-labels")
+      if (ep%100==0):
+        print("Epochs: {} loss: {} test: {}".format(ep+1, loss_mean, test_data(output, x, y, dt_test, lbl_test)))
 
-layer = tf.squeeze(tf.matmul(x, weights['x']) + biases['b'])
+    #######################################################
+    # Testing
+    #######################################################
 
-output = tf.nn.sigmoid(layer)
-cost = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=y, logits=layer))
-optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
+    print("Accuracy on test: {}".format(test_data(output, x, y, dt_test, lbl_test)))
+    print("Accuracy on train: {}".format(test_data(output, x, y, dt_train, lbl_train)))
+    #######################################################
+    # Saving
+    #######################################################
 
-init = tf.global_variables_initializer()
+    save_model(sess, "save/"+ALGO_NAME+str(it))
 
-"""
-Train
-"""
-with tf.Session() as sess:
-    sess.run(init)
-
-    for it in range(5):
-        dt_train  = plis[0][it]
-        lbl_train = plis[1][it]
-        dt_test   = plis[2][it]
-        lbl_test  = plis[3][it]
-
-        for ep in range(epochs):
-            cost_mean = 0
-            X_batches = np.array_split(dt_train, nb_batch)
-            Y_batches = np.array_split(lbl_train, nb_batch)
-            
-            for b in range(nb_batch):
-                batch_x, batch_y = X_batches[b], Y_batches[b]
-                _, c = sess.run([optimizer, cost], feed_dict={x: batch_x, y: batch_y})
-                
-                cost_mean += c/len(X_batches[b])
-            
-            if (ep%10==0):
-                print("Epochs: {} cost: {}".format(ep+1, cost_mean))
-        
-        m = 0
-        for i in range(len(dt_test)):
-            o = output.eval({x: [dt_test[i]], y: [lbl_test[i]]})
-            if o > 0.5 and lbl_test[i] == 1. or o < 0.5 and lbl_test[i] == 0.:
-                m +=1
-        m = m/len(dt_test)
-        print("Accuracy: {}".format(m))
-
-    # Test
-    #test_file = open("test.csv", 'w')
-    #test_file.write("# Id,#Class\n")
-    #for i in range(len(data_final)):
-    #    o = output.eval({x: [data_final[i]]})
-    #    test_file.write("{},{}\n".format(i,int(np.around(o))))
-    #test_file.close()
