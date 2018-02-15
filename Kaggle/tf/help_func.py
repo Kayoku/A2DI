@@ -44,13 +44,50 @@ def restore_model(sess, name):
   print("Model {} restored.".format(name))
 
 """
-Evalue la précision sur des données du modèle
+Renvoie les valeurs suivantes :
+ * Tableau [TN, FP, FP, TP]
+ * recall      : taux de positifs détectés parmi tous les vrais positifs
+ * precision   : taux de positifs détectés parmi tous les positifs détectés
+ * specificity : taux de négatifs détectés parmi tous les vrais négatifs
+ * accuracy    : taux de bonne classification 
 """
 def test_data(output, x, y, dt, lbl):
-  m = 0
+  TP = 0
+  FP = 0
+  FN = 0
+  TN = 0
+  recall = 0
+  precision = 0
+  specificity = 0
+  accuracy = 0
+
   for i in range(len(dt)):
     o = output.eval({x: [dt[i]], y: [lbl[i]]})
-    if np.around(o) == lbl[i]:
-      m+=1
-  m = m/len(dt)
-  return m
+    v = np.around(o)
+
+    # Bonne détection
+    if v == lbl[i]:
+      accuracy+=1
+
+    # Positif
+    if v == 1:
+      # Vrai positif: TP
+      if lbl[i] == 1:
+        TP+=1
+      # Faux positif: FP
+      else:
+        FP+=1
+    # Négatif
+    else:
+      # Faux négatif: FN
+      if lbl[i] == 1:
+        FN+=1
+      # Vrai négatif: TN
+      else:
+        TN+=1
+
+  accuracy = accuracy/len(dt)
+  recall = TP / (TP + FN)
+  precision = TP / (TP + FP)
+  specificity = TN / (FP + TN)
+  return [TN, FN, FP, TP], recall, precision, specificity, accuracy

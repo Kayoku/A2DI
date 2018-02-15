@@ -50,6 +50,7 @@ for it in range(K_FOLD):
 
     print("Accuracy on test: {}".format(test_data(output, x, y, dt_test, lbl_test)))
     print("Accuracy on train: {}".format(test_data(output, x, y, dt_train, lbl_train)))
+
     #######################################################
     # Saving
     #######################################################
