@@ -4,12 +4,13 @@ https://www.lri.fr/~antoine/Courses/Master-ISI/ISI-10/Projets_2012/Projet_DM.pdf
 http://www.math.univ-angers.fr/~labatte/enseignement%20UFR/master%20MIM/classificationsupervisee.pdf
 
 * Structurer comme il faut le projet
-* Pouvoir suivre le déroulement de l'algorithme avec des valeurs
-  utiles
 * Tester un algo de chaque type et explorer des configurations différentes
   * random forest (algo avancés arbre de décision)
   * support vector machine (SVM)
   * Regression logistique simple
   * Réseaux de neurone
-* Tester avec Boosting
+* Se renseigner sur le Boosting
+* Se renseigner sur le feature reduction
 
+* Faire un méga script de validation croisé de comparaison des algos
+  en enregistrant à chaque fois les "réseaux" finaux et tout ça

@@ -87,7 +87,20 @@ def test_data(output, x, y, dt, lbl):
         TN+=1
 
   accuracy = accuracy/len(dt)
-  recall = TP / (TP + FN)
-  precision = TP / (TP + FP)
-  specificity = TN / (FP + TN)
+  recall = np.around((TP / (TP + FN)) * 100, 2)
+  precision = np.around((TP / (TP + FP)) * 100, 2)
+  specificity = np.around((TN / (FP + TN)) * 100, 2)
   return [TN, FN, FP, TP], recall, precision, specificity, accuracy
+
+"""
+Renvoie le taux de bonne classification
+"""
+def test_data_accuracy(output, x, y, dt, lbl):
+  accuracy = 0
+  for i in range(len(dt)):
+    o = output.eval({x: [dt[i]], y: [lbl[i]]})
+    if np.around(o) == lbl[i]:
+      accuracy+=1
+
+  accuracy = accuracy / len(dt)
+  return accuracy

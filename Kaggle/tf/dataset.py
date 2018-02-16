@@ -1,5 +1,6 @@
 import h5py
 import numpy as np
+from sklearn.feature_selection import VarianceThreshold
 from global_vars import *
 
 # Lecture du fichier de données
@@ -77,4 +78,12 @@ def kfold_data(X_input, c_input, k, nb_class):
         
     return plis[0], plis[1], plis[2], plis[3]
 
+# Réduction par threshold
+#select = VarianceThreshold()
+#data = select.fit_transform(data)
+
+# Réduction par threshold
+#data_final = select.fit_transform(data_final)
+
 plis = kfold_data(data, labels, K_FOLD, 2)
+

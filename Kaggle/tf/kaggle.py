@@ -34,26 +34,29 @@ for it in range(K_FOLD):
       loss_mean = 0
       X_batches = np.array_split(dt_train, NB_BATCH)
       Y_batches = np.array_split(lbl_train, NB_BATCH)
-      
+ 
       for b in range(NB_BATCH):
         batch_x, batch_y = X_batches[b], Y_batches[b]
         _, c = sess.run([optimizer, loss], feed_dict={x: batch_x, y: batch_y})
 
-        loss_mean += c/len(X_batches[b])
+        loss_mean += c
+      loss_mean /= NB_BATCH
 
       if (ep%100==0):
-        print("Epochs: {} loss: {} test: {}".format(ep+1, loss_mean, test_data(output, x, y, dt_test, lbl_test)))
+        print("Epochs: {} loss: {} test: {}".format(ep+1, loss_mean, test_data_accuracy(output, x, y, dt_test, lbl_test)))
 
     #######################################################
     # Testing
     #######################################################
 
-    print("Accuracy on test: {}".format(test_data(output, x, y, dt_test, lbl_test)))
-    print("Accuracy on train: {}".format(test_data(output, x, y, dt_train, lbl_train)))
+    all_values = test_data(output, x, y, dt_test, lbl_test)
+    print("Epochs: {} loss: {} test: {}".format(EPOCHS, loss_mean, test_data_accuracy(output, x, y, dt_test, lbl_test)))
+    print("\nrecall: {}% precision: {}% specifity: {}%".format(all_values[1], all_values[2], all_values[3]))
+    print("Accuracy on test: {}".format(all_values[4]))
+    print("Accuracy on train: {}\n".format(test_data_accuracy(output, x, y, dt_train, lbl_train)))
 
     #######################################################
     # Saving
     #######################################################
 
     save_model(sess, "save/"+ALGO_NAME+str(it))
-
