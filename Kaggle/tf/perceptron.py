@@ -18,5 +18,5 @@ y = tf.placeholder(tf.float32, [None], "input-labels")
 layer = tf.squeeze(tf.matmul(x, weights['x']) + biases['b'])
 
 output    = tf.nn.sigmoid(layer)
-loss      = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=y, logits=layer2))
-optimizer = tf.train.AdamOptimizer(learning_rate=LEARNING_RATE).minimize(loss)
+loss      = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=y, logits=layer))
+optimizer = tf.train.GradientDescentOptimizer(learning_rate=LEARNING_RATE).minimize(loss)
