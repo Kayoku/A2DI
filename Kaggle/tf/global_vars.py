@@ -3,11 +3,9 @@
 NB_FEATURES   = 4004
 
 # Learning
-
-LEARNING_RATE = 0.1
-NB_BATCH      = 100
-EPOCHS        = 1000
+LEARNING_RATE = [0.5, 0.2, 0.1, 0.05]
+BATCH         = [1000, 100, 10] 
+EPOCHS        = [100, 300, 500]
 
 # Validation
-
-K_FOLD        = 8
+K_FOLD        = 5

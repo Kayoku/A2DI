@@ -86,4 +86,3 @@ def kfold_data(X_input, c_input, k, nb_class):
 #data_final = select.fit_transform(data_final)
 
 plis = kfold_data(data, labels, K_FOLD, 2)
-

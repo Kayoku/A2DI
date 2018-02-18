@@ -19,12 +19,19 @@ def bias_variable(shape):
 """
 Permet d'écrire le fichier de réponse
 """
-def write_final_test(filename, output, x, y):
+def write_final_test(sess, filename, output, init_op):
   test_file = open(filename, 'w')
   test_file.write("# Id,#Class\n")
-  for i in range(len(data_final)):
-      o = output.eval({x: [data_final[i]]})
+  sess.run(init_op)
+  i = 0
+  while True:
+    try:
+      o = sess.run([output])
       test_file.write("{},{}\n".format(i,int(np.around(o))))
+      i += 1
+    except tf.errors.OutOfRangeError:
+      break
+
   test_file.close()
 
 """
@@ -51,7 +58,7 @@ Renvoie les valeurs suivantes :
  * specificity : taux de négatifs détectés parmi tous les vrais négatifs
  * accuracy    : taux de bonne classification 
 """
-def test_data(output, x, y, dt, lbl):
+def test_data(sess, output, init_op, y): #output, handle, it, handle_it, y):
   TP = 0
   FP = 0
   FN = 0
@@ -60,47 +67,40 @@ def test_data(output, x, y, dt, lbl):
   precision = 0
   specificity = 0
   accuracy = 0
+  cpt = 0
 
-  for i in range(len(dt)):
-    o = output.eval({x: [dt[i]], y: [lbl[i]]})
-    v = np.around(o)
+  sess.run(init_op) 
+  while True:
+    try:
+      o, lbl = sess.run([output, y])#, feed_dict={handle: handle_it})
+    except tf.errors.OutOfRangeError:
+      break
 
-    # Bonne détection
-    if v == lbl[i]:
-      accuracy+=1
+    for i, j in zip(np.around(o), lbl):
+      cpt += 1
+      # Bonne détection
+      if i == j:
+        accuracy+=1
 
-    # Positif
-    if v == 1:
-      # Vrai positif: TP
-      if lbl[i] == 1:
-        TP+=1
-      # Faux positif: FP
+      # Positif
+      if i == 1:
+        # Vrai positif: TP
+        if j == 1:
+          TP+=1
+        # Faux positif: FP
+        else:
+          FP+=1
+      # Négatif
       else:
-        FP+=1
-    # Négatif
-    else:
-      # Faux négatif: FN
-      if lbl[i] == 1:
-        FN+=1
-      # Vrai négatif: TN
-      else:
-        TN+=1
+        # Faux négatif: FN
+        if j == 1:
+          FN+=1
+        # Vrai négatif: TN
+        else:
+          TN+=1
 
-  accuracy = accuracy/len(dt)
-  recall = np.around((TP / (TP + FN)) * 100, 2)
-  precision = np.around((TP / (TP + FP)) * 100, 2)
-  specificity = np.around((TN / (FP + TN)) * 100, 2)
+  accuracy = accuracy/cpt
+  recall = np.around(((TP+1) / (TP + FN + 1)) * 100, 2)
+  precision = np.around(((TP+1) / (TP + FP + 1)) * 100, 2)
+  specificity = np.around(((TN+1) / (FP + TN + 1)) * 100, 2)
   return [TN, FN, FP, TP], recall, precision, specificity, accuracy
-
-"""
-Renvoie le taux de bonne classification
-"""
-def test_data_accuracy(output, x, y, dt, lbl):
-  accuracy = 0
-  for i in range(len(dt)):
-    o = output.eval({x: [dt[i]], y: [lbl[i]]})
-    if np.around(o) == lbl[i]:
-      accuracy+=1
-
-  accuracy = accuracy / len(dt)
-  return accuracy
