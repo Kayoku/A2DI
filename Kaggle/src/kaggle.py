@@ -8,6 +8,7 @@ from dataset.dataset import *
 from core.help_func import *
 
 import model.perceptron as perceptron 
+import model.mlp as mlp
 
 def usage():
   print("usage: python3 kaggle learning pre model lr bash epochs\n       python3 kaggle test pre model name")
