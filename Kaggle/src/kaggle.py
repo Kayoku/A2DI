@@ -9,6 +9,7 @@ from core.help_func import *
 
 import model.perceptron as perceptron 
 import model.mlp as mlp
+import model.mlp2 as mlp2
 
 def usage():
   print("usage: python3 kaggle learning pre model lr bash epochs\n       python3 kaggle test pre model name")
@@ -25,7 +26,7 @@ pre = sys.argv[2]
 model = sys.argv[3]
 
 if pre == 'variances':
-  training_data, validation_data, final_data = variance_filter(0.0001)
+  training_data, validation_data, final_data = variance_filter(0.01)
   print("Variance reduction.")
 else:
   print("No reduction.")
@@ -63,10 +64,12 @@ if sys.argv[1] == 'learning' and len(sys.argv) == 7:
     model_output = perceptron.get_model(np.shape(training_data)[1], x)
   elif model == 'mlp':
     model_output = mlp.get_model(np.shape(training_data)[1], x)
+  elif model == 'mlp2':
+    model_output = mlp2.get_model(np.shape(training_data)[1], x)
 
   output = tf.nn.sigmoid(model_output)
   loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=y, logits=tf.squeeze(model_output)))
-  optimizer = tf.train.GradientDescentOptimizer(learning_rate=lr).minimize(loss)
+  optimizer = tf.train.AdamOptimizer(learning_rate=lr).minimize(loss)
 
   ########################
   # Learning step 
@@ -123,6 +126,8 @@ elif sys.argv[1] == 'test' and len(sys.argv) == 5:
     model_output = perceptron.get_model(np.shape(training_data)[1], x)
   elif model == 'mlp':
     model_output = mlp.get_model(np.shape(training_data)[1], x)
+  elif model == 'mlp2':
+    model_output = mlp2.get_model(np.shape(training_data)[1], x)
 
   output = tf.nn.sigmoid(model_output)
 
